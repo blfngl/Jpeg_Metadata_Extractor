@@ -29,10 +29,28 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
+	private static JFrame frame;
+
 	public static void main(String args[])
 	{
+		createGui();
+
+		// Metadata test
+		try {
+			readMeta();
+		} catch (Exception e) {
+			
+		}
+
+		// Display frame
+		System.out.println("Opening frame");
+		frame.setVisible(true);
+	}
+
+	private static void createGui()
+	{
 		// The window for the program
-		JFrame frame = new JFrame("JME - JPEG Metadata Extractor");
+		frame = new JFrame("JME - JPEG Metadata Extractor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(600, 600);
 
@@ -42,9 +60,9 @@ public class Main
 		JMenu menuOptions = new JMenu("Options");
 		JMenu menuHelp = new JMenu("Help");
 
-		JMenuItem menuFile_Open = new JMenuItem("Open");
-		JMenuItem menuFile_Dump = new JMenuItem("Dump metadata");
-		JMenuItem menuFile_Exit = new JMenuItem("Exit");
+		JMenuItem menuFile_Open = new JMenuItem("Open                          (Ctrl + O)");
+		JMenuItem menuFile_Dump = new JMenuItem("Dump metadata      (Ctrl + D)");
+		JMenuItem menuFile_Exit = new JMenuItem("Exit                             (Ctrl + Esc)");
 
 		menuFile_Open.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -81,17 +99,6 @@ public class Main
 
 		panelZip.add(labelPanelZip);
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
-
-		// Metadata test
-		try {
-			readMeta();
-		} catch (Exception e) {
-
-		}
-
-		// Display frame
-		System.out.println("Opening frame");
-		frame.setVisible(true);
 	}
 
 	private static void readMeta() throws ImageProcessingException, IOException
