@@ -9,6 +9,8 @@
 package mirasoln.jme;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,25 +34,47 @@ public class Main
 		JMenu menuOptions = new JMenu("Options");
 		JMenu menuHelp = new JMenu("Help");
 
+		JMenuItem menuFile_Open = new JMenuItem("Open");
+		JMenuItem menuFile_Dump = new JMenuItem("Dump metadata");
+		JMenuItem menuFile_Exit = new JMenuItem("Exit");
+
+		menuFile_Open.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("Opening file...");
+			}
+		});
+
+		menuFile_Dump.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) { 
+				System.out.println("Dumping metadata");
+			}
+		});
+
+		menuFile_Exit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("Exiting JME");
+				System.exit(0);
+			}
+		});
+
 		mb.add(menuFile);
 		mb.add(menuOptions);
 		mb.add(menuHelp);
 
-		JMenuItem menuFile_Open = new JMenuItem("Open");
-		JMenuItem menuFile_Dump = new JMenuItem("Dump metadata");
-
 		menuFile.add(menuFile_Open);
 		menuFile.add(menuFile_Dump);
+		menuFile.add(menuFile_Exit);
 
 		frame.getContentPane().add(BorderLayout.NORTH, mb);
 
 		// ZIP code display
 		JPanel panelZip = new JPanel();
 		JLabel labelPanelZip = new JLabel("ZIP code:");
-		panelZip.add(labelPanelZip);
 
+		panelZip.add(labelPanelZip);
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
 
+		// Display frame
 		System.out.println("Opening frame");
 		frame.setVisible(true);
 	}
