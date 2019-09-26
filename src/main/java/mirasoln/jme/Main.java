@@ -21,6 +21,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import org.json.simple.parser.JSONParser;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -30,16 +32,19 @@ import com.drew.metadata.Tag;
 public class Main
 {
 	private static JFrame frame;
+	private static JSONParser jsonParser;
 
 	public static void main(String args[])
 	{
 		createGui();
+		
+		jsonParser = new JSONParser();
 
 		// Metadata test
 		try {
 			readMeta("image.jpg");
 		} catch (Exception e) {
-			
+
 		}
 
 		// Display frame
