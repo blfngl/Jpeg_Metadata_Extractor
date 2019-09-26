@@ -11,6 +11,8 @@ package mirasoln.jme;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,6 +20,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 
 public class Main
 {
@@ -74,8 +82,31 @@ public class Main
 		panelZip.add(labelPanelZip);
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
 
+		// Metadata test
+		try {
+			readMeta();
+		} catch (Exception e) {
+
+		}
+
 		// Display frame
 		System.out.println("Opening frame");
 		frame.setVisible(true);
+	}
+
+	private static void readMeta() throws ImageProcessingException, IOException
+	{
+		System.out.println("Reading an image");
+
+		File fileJpeg = new File("image.jpg");
+		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
+
+		for (Directory dir : meta.getDirectories())
+		{
+			for (Tag tag : dir.getTags())
+			{
+				System.out.println(tag);
+			}
+		}
 	}
 }
