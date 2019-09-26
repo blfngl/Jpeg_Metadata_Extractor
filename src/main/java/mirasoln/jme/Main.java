@@ -37,16 +37,21 @@ public class Main
 
 		// Metadata test
 		try {
-			readMeta();
+			readMeta("image.png");
 		} catch (Exception e) {
 			
 		}
+		
+		
 
 		// Display frame
 		System.out.println("Opening frame");
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Creates the GUI of the program
+	 */
 	private static void createGui()
 	{
 		// The window for the program
@@ -101,11 +106,16 @@ public class Main
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
 	}
 
-	private static void readMeta() throws ImageProcessingException, IOException
+	/**
+	 * Reads metadata information from a given jpeg
+	 * @throws ImageProcessingException
+	 * @throws IOException
+	 */
+	private static void readMeta(String filePath) throws ImageProcessingException, IOException
 	{
 		System.out.println("Reading an image");
 
-		File fileJpeg = new File("image.jpg");
+		File fileJpeg = new File(filePath);
 		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
 
 		for (Directory dir : meta.getDirectories())
