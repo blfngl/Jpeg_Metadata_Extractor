@@ -37,12 +37,10 @@ public class Main
 
 		// Metadata test
 		try {
-			readMeta("image.png");
+			readMeta("image.jpg");
 		} catch (Exception e) {
 			
 		}
-		
-		
 
 		// Display frame
 		System.out.println("Opening frame");
