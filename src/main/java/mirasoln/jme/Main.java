@@ -42,20 +42,21 @@ import com.drew.metadata.Tag;
 public class Main
 {
 	private static final String GEO_SERVER = "https://maps.googleapis.com/maps/api/geocode/json?";
-
 	private static JFrame frame;
 
 	public static void main(String args[])
 	{
+		// Make the window
 		createGui();
 
 		// Metadata test
 		try {
 			readMeta("image.jpg");
 		} catch (Exception e) {
-			System.out.println("error");
+			System.out.println("error\n" + e.getMessage());
 		}
 
+		// Response from http request
 		JSONObject response;
 
 		try {
