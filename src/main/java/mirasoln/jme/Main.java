@@ -11,8 +11,15 @@ package mirasoln.jme;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +28,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -31,25 +41,155 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
+	private static final String GEO_SERVER = "https://maps.googleapis.com/maps/api/geocode/json?";
+
 	private static JFrame frame;
 	private static JSONParser jsonParser;
 
 	public static void main(String args[])
 	{
 		createGui();
-		
+
 		jsonParser = new JSONParser();
 
 		// Metadata test
-		try {
+		/*try {
 			readMeta("image.jpg");
 		} catch (Exception e) {
+			System.out.println("error");
+		}*/
 
+		JSONObject response;
+
+		try {
+			response = getLocation("31.8114097, -106.7047003");
+			getZIPFromJson(response);
+		} catch (ParseException e) {
+			System.out.println("ParseError\n" + e.getMessage());
 		}
 
 		// Display frame
 		System.out.println("Opening frame");
 		frame.setVisible(true);
+
+		//TODO attach functionality to buttons
+	}
+
+	/**
+	 * Gets the ZIP code from a json from the google maps api
+	 * @param json the json from the google api to parse
+	 * @throws ParseException
+	 */
+	private static void getZIPFromJson(JSONObject json) throws ParseException
+	{
+		// Get the list of results from the json returned
+		JSONArray results = (JSONArray) json.get("results");
+		Iterator resultsIterator = results.iterator();
+
+		// While there are entries
+		while(resultsIterator.hasNext())
+		{
+			// Create an iterator for the mapped result (denoted in a json by '[ ]')
+			// Each result is split into 'address_components', containing tons of data
+			// on the location in question.
+			Iterator<Map.Entry> address_components = ((Map) resultsIterator.next()).entrySet().iterator();
+
+			// Iterate over the map
+			while (address_components.hasNext())
+			{
+				Map.Entry  pair = address_components.next();
+
+				if (pair.getKey().equals("address_components"))
+				{
+					// This flag determines if the 'postal_code' tag has been found
+					boolean flagZIPFound = false;
+					JSONArray component = (JSONArray) pair.getValue();
+					// Iterate over the values in the component
+					Iterator componentIterator = component.iterator();
+					Iterator<Map.Entry> nextItrl = ((Map) componentIterator.next()).entrySet().iterator();
+
+					while (nextItrl.hasNext())
+					{
+						Map.Entry nextPair = nextItrl.next();
+						String value = nextPair.getValue().toString();
+
+						// There's probably a better way to find the ZIP than doing this.
+						// If the flag is on, the last 'type' was 'postal_code', meaning
+						// the next value in the json is most likely the ZIP code.
+						if (flagZIPFound)
+						{
+							System.out.println("ZIP found: " + value);
+							flagZIPFound = false;
+							break;
+						}
+
+						if (value.equals("[\"postal_code\"]"))
+							flagZIPFound = true;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets a json file of information about a location specified by lat and long coords
+	 * @param coords the lat and long coords, separated by a ','
+	 * @return the json containing information about the location
+	 * @throws ParseException
+	 */
+	private static JSONObject getLocation(String coords) throws ParseException
+	{
+		String webAddress = buildUrl(coords);
+		String content = null;
+
+		try
+		{
+			URL url = new URL(webAddress);
+			InputStream stream = url.openStream();
+
+			try
+			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+				StringBuffer buffer = new StringBuffer();
+				int read;
+				char[] chars = new char[1024];
+				while ((read = reader.read(chars)) != -1)
+					buffer.append(chars, 0, read);
+
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(buffer.toString());
+
+				return json;
+			}
+
+			finally {
+				stream.close();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	/**
+	 * Builds a url from coordinates provided by the image(s)
+	 * @param coords latitude and longitude coordinates separated by a ','
+	 * @return the https request
+	 */
+	private static String buildUrl(String coords)
+	{
+		StringBuilder b = new StringBuilder();
+
+		b.append(GEO_SERVER);
+		b.append("address=");
+		// Coordinates shouldn't have any spaces but in the event that they do
+		// they shall be replaced
+		b.append(coords.replaceAll(" ", "+"));
+		b.append("&sensor=false");
+		b.append("&key=" + JmeRef.apiKey);
+
+		System.out.println("URL built: " + b.toString());
+		return b.toString();
 	}
 
 	/**
