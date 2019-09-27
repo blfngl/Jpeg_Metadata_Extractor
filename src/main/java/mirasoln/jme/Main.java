@@ -139,20 +139,25 @@ public class Main
 	 */
 	private static JSONObject getLocation(String coords) throws ParseException
 	{
+		// Build the url
 		String webAddress = buildUrl(coords);
 		String content = null;
 
 		try
 		{
+			// Make request
 			URL url = new URL(webAddress);
+			// TCP get request
 			InputStream stream = url.openStream();
 
 			try
 			{
+				// Turn the result into a json
 				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 				StringBuffer buffer = new StringBuffer();
 				int read;
 				char[] chars = new char[1024];
+
 				while ((read = reader.read(chars)) != -1)
 					buffer.append(chars, 0, read);
 
@@ -162,10 +167,12 @@ public class Main
 				return json;
 			}
 
+			// Don't cross the streams
 			finally {
 				stream.close();
 			}
 		} catch (IOException e) {
+			System.out.println("Error: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
@@ -183,9 +190,10 @@ public class Main
 		b.append(GEO_SERVER);
 		b.append("address=");
 		// Coordinates shouldn't have any spaces but in the event that they do
-		// they shall be replaced
+		// they shall be replaced.
 		b.append(coords.replaceAll(" ", "+"));
 		b.append("&sensor=false");
+		// This is needed for the program to work!
 		b.append("&key=" + JmeRef.apiKey);
 
 		System.out.println("URL built: " + b.toString());
