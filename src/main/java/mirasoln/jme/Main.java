@@ -44,20 +44,17 @@ public class Main
 	private static final String GEO_SERVER = "https://maps.googleapis.com/maps/api/geocode/json?";
 
 	private static JFrame frame;
-	private static JSONParser jsonParser;
 
 	public static void main(String args[])
 	{
 		createGui();
 
-		jsonParser = new JSONParser();
-
 		// Metadata test
-		/*try {
+		try {
 			readMeta("image.jpg");
 		} catch (Exception e) {
 			System.out.println("error");
-		}*/
+		}
 
 		JSONObject response;
 
