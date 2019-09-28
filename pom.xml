@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Jpeg_Meta_Extractor</groupId>
   <artifactId>JpegMetaExtractor</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1a</version>
   
   <dependencies>
 	<dependency>
@@ -20,7 +20,6 @@
 
   <build>
     <plugins>
-      <!-- any other plugins -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -32,6 +31,11 @@
           </execution>
         </executions>
         <configuration>
+		  <archive>
+		    <manifest>
+			  <mainClass>mirasoln.jme.Main</mainClass>
+			</manifest>
+		  </archive>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
