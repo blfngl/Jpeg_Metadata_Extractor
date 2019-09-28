@@ -271,7 +271,6 @@ public class Main
 		// This is needed for the program to work!
 		b.append("&key=" + API_KEY);
 
-		System.out.println("URL built: " + b.toString());
 		return b.toString();
 	}
 
