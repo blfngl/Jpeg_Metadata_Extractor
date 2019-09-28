@@ -127,7 +127,7 @@ public class Main
 		else
 			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
 
-		logger.info("\nFinished file: " + file + ".\n");
+		logger.info("\nFinished processing file: " + file + ".\n");
 	}
 
 	/**
@@ -341,7 +341,6 @@ public class Main
 	 */
 	private static String getCoordsFromImage(String filePath) throws ImageProcessingException, IOException
 	{
-		logger.info("Getting coords for image " + filePath);
 		StringBuilder coords = new StringBuilder();
 
 		File file = new File(filePath);
