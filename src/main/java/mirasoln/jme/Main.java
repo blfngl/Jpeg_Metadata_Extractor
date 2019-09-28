@@ -58,7 +58,8 @@ public class Main
 			for (String image : args)
 				processImage(image);
 
-			System.out.println("\nPress enter to exit.");
+			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
+			System.out.println("Press enter to exit.");
 			Scanner scan = new Scanner(System.in);
 			scan.nextLine();
 		}
