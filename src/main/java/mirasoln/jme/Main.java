@@ -78,7 +78,7 @@ public class Main
 				JSONObject response;
 				response = getLocation(coords);
 
-				getZIPFromJson(response);
+				System.out.println("ZIP found: " + getZIPFromJson(response));
 			}
 
 			catch (Exception e) {
@@ -93,7 +93,7 @@ public class Main
 	 * @param json the json from the google api to parse
 	 * @throws ParseException
 	 */
-	private static void getZIPFromJson(JSONObject json) throws ParseException
+	private static String getZIPFromJson(JSONObject json) throws ParseException
 	{
 		// Get the list of results from the json returned
 		JSONArray results = (JSONArray) json.get("results");
@@ -131,9 +131,8 @@ public class Main
 						// the next value in the json is most likely the ZIP code.
 						if (flagZIPFound)
 						{
-							System.out.println("ZIP found: " + value);
 							flagZIPFound = false;
-							break;
+							return value;
 						}
 
 						if (value.equals("[\"postal_code\"]"))
@@ -142,6 +141,8 @@ public class Main
 				}
 			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -332,9 +333,9 @@ public class Main
 		double degree = Double.parseDouble(listCoordsDec[0]);
 		double minute = Double.parseDouble(listCoordsDec[1]);
 		double second = Double.parseDouble(listCoordsDec[2]);
-		
+
 		System.out.println("d: " + degree + " m: " + minute + " s:" + second);
-		
+
 		double convertedCoords = degree + minute / 60d + second / 3600d;
 
 		System.out.println(convertedCoords);
