@@ -17,8 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,13 +45,22 @@ import com.drew.metadata.Tag;
 public class Main
 {
 	private static JFrame frame;
+	private static Logger logger;
 
 	public static void main(String args[])
 	{
+		initLogger();
+
 		// If there are command line args
 		if (args.length > 0)
+		{
 			for (String image : args)
 				processImage(image);
+
+			System.out.println("\nPress any key to exit.");
+			Scanner scan = new Scanner(System.in);
+			scan.nextLine();
+		}
 
 		// If there are no cmdline args, then open the gui
 		else
@@ -59,13 +72,35 @@ public class Main
 	}
 
 	/**
+	 * Initializes logging.
+	 */
+	private static void initLogger()
+	{
+		String currentDate = new Date(System.currentTimeMillis()).toString();
+		currentDate = currentDate.replace(":", "-");
+
+		logger = Logger.getLogger("JME " + currentDate);
+
+		try {
+			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
+			fh.setFormatter(new JMELoggerFormatter());
+			logger.addHandler(fh);
+			logger.setUseParentHandlers(false);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Processes a file, first confirming it is a jpeg and then looking for
 	 * location metadata.
 	 * @param file The file to process
 	 */
 	private static void processImage(String file)
 	{
-		System.out.println("\n========== Processing file: " + file + " ==========\n");
+		logger.info("\n========== Processing file: " + file + " ==========\n");
 
 		if (confirmJpeg(file))
 		{
@@ -77,20 +112,20 @@ public class Main
 				JSONObject response;
 				response = getLocation(coords);
 
-				System.out.println("ZIP information: " + getZIPFromJson(response));
+				logger.info("ZIP information: " + getZIPFromJson(response));
 			}
 
 			catch (Exception e)
 			{
-				System.out.println("Error: " + e.getMessage());
-				e.printStackTrace();
+				logger.info("Error: " + e.getMessage());
+				logger.info(e.getStackTrace().toString());
 			}
 		}
 
 		else
-			System.out.println("File " + file + " does not exist or does not have a valid jpeg file extension!");
+			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
 
-		System.out.println("\n========== Finished file: " + file + " ==========\n");
+		logger.info("\nFinished file: " + file + ".\n");
 	}
 
 	/**
@@ -167,7 +202,7 @@ public class Main
 			}
 		}
 
-		return "No zip could be associated with coordinates attached to this image!";
+		return "No zip could be associated with the coordinates attached to this image!";
 	}
 
 	/**
@@ -304,7 +339,7 @@ public class Main
 	 */
 	private static String getCoordsFromImage(String filePath) throws ImageProcessingException, IOException
 	{
-		System.out.println("Getting coords for image " + filePath);
+		logger.info("Getting coords for image " + filePath);
 		StringBuilder coords = new StringBuilder();
 
 		File file = new File(filePath);
@@ -368,17 +403,13 @@ public class Main
 	 */
 	private static void readMeta(String filePath) throws ImageProcessingException, IOException
 	{
-		System.out.println("Reading an image");
+		logger.info("Getting metadata from " + filePath);
 
 		File fileJpeg = new File(filePath);
 		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
 
 		for (Directory dir : meta.getDirectories())
-		{
 			for (Tag tag : dir.getTags())
-			{
-				System.out.println(tag);
-			}
-		}
+				logger.info(tag.toString());
 	}
 }
