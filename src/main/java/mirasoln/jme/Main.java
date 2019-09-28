@@ -17,8 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,57 +44,114 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
-	private static final String GEO_SERVER = "https://maps.googleapis.com/maps/api/geocode/json?";
+	private static final String API_KEY = "";
 	private static JFrame frame;
+	private static Logger logger;
 
 	public static void main(String args[])
 	{
+		initLogger();
+
 		// If there are command line args
 		if (args.length > 0)
 		{
-			try {
-				for (String image : args)
-				{
-					String coords;
-					coords = getCoordsFromImage(image);
+			for (String image : args)
+				processImage(image);
 
-					JSONObject response;
-					response = getLocation(coords);
-
-					getZIPFromJson(response);
-				}
-			}
-
-			catch (Exception e) {
-				System.out.println("error\n" + e.getMessage());
-				e.printStackTrace();
-			}
+			System.out.println("\nPress any key to exit.");
+			Scanner scan = new Scanner(System.in);
+			scan.nextLine();
 		}
 
-		// If there are no cmdline args open the gui
-		// *currently just runs a test of the program*
+		// If there are no cmdline args, then open the gui
 		else
 		{
-			try {
-				String coords;
-				coords = getCoordsFromImage("DSCN0010.jpg");
-
-				JSONObject response;
-				response = getLocation(coords);
-
-				System.out.println("ZIP found: " + getZIPFromJson(response));
-			}
-
-			catch (Exception e) {
-				System.out.println("error\n" + e.getMessage());
-				e.printStackTrace();
-			}
+			createGui();
+			frame.setVisible(true);
+			// TODO make button functionality
 		}
 	}
 
 	/**
-	 * Gets the ZIP code from a json from the google maps api
-	 * @param json the json from the google api to parse
+	 * Initializes logging.
+	 */
+	private static void initLogger()
+	{
+		String currentDate = new Date(System.currentTimeMillis()).toString();
+		currentDate = currentDate.replace(":", "-");
+
+		logger = Logger.getLogger("JME " + currentDate);
+
+		try {
+			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
+			fh.setFormatter(new JMELoggerFormatter());
+			logger.addHandler(fh);
+			logger.setUseParentHandlers(false);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Processes a file, first confirming it is a jpeg and then looking for
+	 * location metadata.
+	 * @param file The file to process
+	 */
+	private static void processImage(String file)
+	{
+		logger.info("\n========== Processing file: " + file + " ==========\n");
+
+		if (confirmJpeg(file))
+		{
+			try
+			{
+				String coords;
+				coords = getCoordsFromImage(file);
+
+				JSONObject response;
+				response = getLocation(coords);
+
+				logger.info("ZIP code: " + getZIPFromJson(response));
+			}
+
+			catch (Exception e)
+			{
+				logger.info("Error: " + e.getMessage());
+				logger.info(e.getStackTrace().toString());
+			}
+		}
+
+		else
+			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
+
+		logger.info("\nFinished file: " + file + ".\n");
+	}
+
+	/**
+	 * Returns true if a file has a valid jpeg file extension.
+	 * @param filePath The file to check
+	 * @return True if the file has a valid jpeg extension
+	 */
+	private static boolean confirmJpeg(String filePath)
+	{
+		String fileName = new File(filePath).getName();
+		int indexExtension = fileName.lastIndexOf(".");
+		String fileExtension = fileName.substring(indexExtension + 1);
+
+		for (String extension : JmeRef.VALID_JPEG_EXT)
+		{
+			if (extension.equals(fileExtension))
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the ZIP code from a json from the google maps api.
+	 * @param json The json from the google api to parse
 	 * @throws ParseException
 	 */
 	private static String getZIPFromJson(JSONObject json) throws ParseException
@@ -142,7 +203,7 @@ public class Main
 			}
 		}
 
-		return null;
+		return "No zip could be associated with the coordinates attached to this image!";
 	}
 
 	/**
@@ -200,14 +261,14 @@ public class Main
 	{
 		StringBuilder b = new StringBuilder();
 
-		b.append(GEO_SERVER);
+		b.append(JmeRef.MAP_API);
 		b.append("address=");
 		// Coordinates shouldn't have any spaces but in the event that they do
 		// they shall be replaced.
 		b.append(coords.replaceAll(" ", "+"));
 		b.append("&sensor=false");
 		// This is needed for the program to work!
-		b.append("&key=" + JmeRef.API_KEY);
+		b.append("&key=" + API_KEY);
 
 		System.out.println("URL built: " + b.toString());
 		return b.toString();
@@ -279,7 +340,7 @@ public class Main
 	 */
 	private static String getCoordsFromImage(String filePath) throws ImageProcessingException, IOException
 	{
-		System.out.println("Getting coords for image " + filePath);
+		logger.info("Getting coords for image " + filePath);
 		StringBuilder coords = new StringBuilder();
 
 		File file = new File(filePath);
@@ -343,17 +404,13 @@ public class Main
 	 */
 	private static void readMeta(String filePath) throws ImageProcessingException, IOException
 	{
-		System.out.println("Reading an image");
+		logger.info("Getting metadata from " + filePath);
 
 		File fileJpeg = new File(filePath);
 		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
 
 		for (Directory dir : meta.getDirectories())
-		{
 			for (Tag tag : dir.getTags())
-			{
-				System.out.println(tag);
-			}
-		}
+				logger.info(tag.toString());
 	}
 }
