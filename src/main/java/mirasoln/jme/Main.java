@@ -113,7 +113,7 @@ public class Main
 				JSONObject response;
 				response = getLocation(coords);
 
-				logger.info("ZIP information: " + getZIPFromJson(response));
+				logger.info("ZIP code: " + getZIPFromJson(response));
 			}
 
 			catch (Exception e)
