@@ -174,7 +174,7 @@ public class Main
 			{
 				Map.Entry  pair = address_components.next();
 
-				if (pair.getKey().equals("address_components"))
+				if (pair.getKey().equals(JmeRef.API_TAG_ADDR_COMP))
 				{
 					// This flag determines if the 'postal_code' tag has been found
 					boolean flagZIPFound = false;
@@ -197,7 +197,7 @@ public class Main
 							return value;
 						}
 
-						if (value.equals("[\"postal_code\"]"))
+						if (value.equals(JmeRef.API_TAG_POSTAL_CODE))
 							flagZIPFound = true;
 					}
 				}
@@ -280,19 +280,19 @@ public class Main
 	private static void createGui()
 	{
 		// The window for the program
-		frame = new JFrame("JME - JPEG Metadata Extractor");
+		frame = new JFrame(JmeRef.EXE_TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(600, 600);
 
 		// Menu bar
 		JMenuBar mb = new JMenuBar();
-		JMenu menuFile = new JMenu("File");
+		JMenu menuFile = new JMenu(JmeRef.EXE_MENU_TITLE_FILE);
 		JMenu menuOptions = new JMenu("Options");
 		JMenu menuHelp = new JMenu("Help");
 
-		JMenuItem menuFile_Open = new JMenuItem("Open                          (Ctrl + O)");
-		JMenuItem menuFile_Dump = new JMenuItem("Dump metadata      (Ctrl + D)");
-		JMenuItem menuFile_Exit = new JMenuItem("Exit                             (Ctrl + Esc)");
+		JMenuItem menuFile_Open = new JMenuItem(JmeRef.EXE_SUBMENU_OPEN);
+		JMenuItem menuFile_Dump = new JMenuItem(JmeRef.EXE_SUBMENU_DUMP);
+		JMenuItem menuFile_Exit = new JMenuItem(JmeRef.EXE_SUBMENU_EXIT);
 
 		menuFile_Open.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
