@@ -40,57 +40,82 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
-	private static final String GEO_SERVER = "https://maps.googleapis.com/maps/api/geocode/json?";
 	private static JFrame frame;
 
 	public static void main(String args[])
 	{
 		// If there are command line args
 		if (args.length > 0)
-		{
-			try {
-				for (String image : args)
-				{
-					String coords;
-					coords = getCoordsFromImage(image);
+			for (String image : args)
+				processImage(image);
 
-					JSONObject response;
-					response = getLocation(coords);
-
-					getZIPFromJson(response);
-				}
-			}
-
-			catch (Exception e) {
-				System.out.println("error\n" + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		// If there are no cmdline args open the gui
-		// *currently just runs a test of the program*
+		// If there are no cmdline args, then open the gui
 		else
 		{
-			try {
-				String coords;
-				coords = getCoordsFromImage("DSCN0010.jpg");
-
-				JSONObject response;
-				response = getLocation(coords);
-
-				System.out.println("ZIP found: " + getZIPFromJson(response));
-			}
-
-			catch (Exception e) {
-				System.out.println("error\n" + e.getMessage());
-				e.printStackTrace();
-			}
+			createGui();
+			frame.setVisible(true);
+			// TODO make button functionality
 		}
 	}
 
 	/**
-	 * Gets the ZIP code from a json from the google maps api
-	 * @param json the json from the google api to parse
+	 * Processes a file, first confirming it is a jpeg and then looking for
+	 * location metadata.
+	 * @param file The file to process
+	 */
+	private static void processImage(String file)
+	{
+		System.out.println("\n========== Processing file: " + file + " ==========\n");
+
+		if (confirmJpeg(file))
+		{
+			try
+			{
+				String coords;
+				coords = getCoordsFromImage(file);
+
+				JSONObject response;
+				response = getLocation(coords);
+
+				System.out.println("ZIP information: " + getZIPFromJson(response));
+			}
+
+			catch (Exception e)
+			{
+				System.out.println("Error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		else
+			System.out.println("File " + file + " does not exist or does not have a valid jpeg file extension!");
+
+		System.out.println("\n========== Finished file: " + file + " ==========\n");
+	}
+
+	/**
+	 * Returns true if a file has a valid jpeg file extension.
+	 * @param filePath The file to check
+	 * @return True if the file has a valid jpeg extension
+	 */
+	private static boolean confirmJpeg(String filePath)
+	{
+		String fileName = new File(filePath).getName();
+		int indexExtension = fileName.lastIndexOf(".");
+		String fileExtension = fileName.substring(indexExtension + 1);
+
+		for (String extension : JmeRef.VALID_JPEG_EXT)
+		{
+			if (extension.equals(fileExtension))
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the ZIP code from a json from the google maps api.
+	 * @param json The json from the google api to parse
 	 * @throws ParseException
 	 */
 	private static String getZIPFromJson(JSONObject json) throws ParseException
@@ -142,7 +167,7 @@ public class Main
 			}
 		}
 
-		return null;
+		return "No zip could be associated with coordinates attached to this image!";
 	}
 
 	/**
@@ -200,7 +225,7 @@ public class Main
 	{
 		StringBuilder b = new StringBuilder();
 
-		b.append(GEO_SERVER);
+		b.append(JmeRef.MAP_API);
 		b.append("address=");
 		// Coordinates shouldn't have any spaces but in the event that they do
 		// they shall be replaced.
