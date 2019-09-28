@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -46,31 +45,47 @@ public class Main
 
 	public static void main(String args[])
 	{
-		// Make the window
-		createGui();
+		// If there are command line args
+		if (args.length > 0)
+		{
+			try {
+				for (String image : args)
+				{
+					String coords;
+					coords = getCoordsFromImage(image);
 
-		// Metadata test
-		try {
-			readMeta("image.jpg");
-		} catch (Exception e) {
-			System.out.println("error\n" + e.getMessage());
+					JSONObject response;
+					response = getLocation(coords);
+
+					getZIPFromJson(response);
+				}
+			}
+
+			catch (Exception e) {
+				System.out.println("error\n" + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 
-		// Response from http request
-		JSONObject response;
+		// If there are no cmdline args open the gui
+		// *currently just runs a test of the program*
+		else
+		{
+			try {
+				String coords;
+				coords = getCoordsFromImage("DSCN0010.jpg");
 
-		try {
-			response = getLocation("31.8114097, -106.7047003");
-			getZIPFromJson(response);
-		} catch (ParseException e) {
-			System.out.println("ParseError\n" + e.getMessage());
+				JSONObject response;
+				response = getLocation(coords);
+
+				getZIPFromJson(response);
+			}
+
+			catch (Exception e) {
+				System.out.println("error\n" + e.getMessage());
+				e.printStackTrace();
+			}
 		}
-
-		// Display frame
-		System.out.println("Opening frame");
-		frame.setVisible(true);
-
-		//TODO attach functionality to buttons
 	}
 
 	/**
@@ -175,7 +190,6 @@ public class Main
 		}
 	}
 
-
 	/**
 	 * Builds a url from coordinates provided by the image(s)
 	 * @param coords latitude and longitude coordinates separated by a ','
@@ -192,7 +206,7 @@ public class Main
 		b.append(coords.replaceAll(" ", "+"));
 		b.append("&sensor=false");
 		// This is needed for the program to work!
-		b.append("&key=" + JmeRef.apiKey);
+		b.append("&key=" + JmeRef.API_KEY);
 
 		System.out.println("URL built: " + b.toString());
 		return b.toString();
@@ -253,6 +267,78 @@ public class Main
 
 		panelZip.add(labelPanelZip);
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
+	}
+
+	/**
+	 * Returns the coordinates belonging to an image
+	 * @param filePath the image
+	 * @return the coordinates
+	 * @throws IOException 
+	 * @throws ImageProcessingException 
+	 */
+	private static String getCoordsFromImage(String filePath) throws ImageProcessingException, IOException
+	{
+		System.out.println("Getting coords for image " + filePath);
+		StringBuilder coords = new StringBuilder();
+
+		File file = new File(filePath);
+		Metadata meta = ImageMetadataReader.readMetadata(file);
+
+		for (Directory dir : meta.getDirectories())
+		{
+			for (Tag tag : dir.getTags())
+			{
+				String theTag = tag.toString();
+
+				if (theTag.contains(JmeRef.JPG_TAG_LAT))
+				{
+					theTag = theTag.substring(JmeRef.JPG_TAG_LAT.length());
+					theTag = convertDMStoDecimal(theTag);
+					coords.append(theTag);
+					coords.append(",");
+					System.out.println(theTag);
+				}
+
+				else if (theTag.contains(JmeRef.JPG_TAG_LNG))
+				{
+					theTag = theTag.substring(JmeRef.JPG_TAG_LNG.length());
+					theTag = convertDMStoDecimal(theTag);
+					coords.append(theTag);
+					System.out.println(theTag);
+				}
+			}
+		}
+
+		System.out.println(coords);
+		return coords.toString();
+	}
+
+	/**
+	 * Converts DMS (degrees, minutes, seconds) to decimal format
+	 * @return the decimal format of a DMS coordinate string
+	 */
+	private static String convertDMStoDecimal(String coordsDMS)
+	{
+		// Split the string into decimals, minutes and seconds
+		// There are three parts to a DMS ordinate, hopefully we always get all three
+		String[] listCoordsDec = new String[3];
+		String[] listCoordsDMS = coordsDMS.split(" ");
+
+		// Replace all non-digit characters with blanks
+		for (int i = 0; i < 3; i++)
+			listCoordsDec[i] = listCoordsDMS[i].replaceAll("[\\D]", "");
+
+		// Convert to decimal
+		double degree = Double.parseDouble(listCoordsDec[0]);
+		double minute = Double.parseDouble(listCoordsDec[1]);
+		double second = Double.parseDouble(listCoordsDec[2]);
+		
+		System.out.println("d: " + degree + " m: " + minute + " s:" + second);
+		
+		double convertedCoords = degree + minute / 60d + second / 3600d;
+
+		System.out.println(convertedCoords);
+		return "" + convertedCoords;
 	}
 
 	/**
