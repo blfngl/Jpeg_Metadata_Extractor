@@ -44,6 +44,7 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
+	private static final String API_KEY = "";
 	private static JFrame frame;
 	private static Logger logger;
 
@@ -267,7 +268,7 @@ public class Main
 		b.append(coords.replaceAll(" ", "+"));
 		b.append("&sensor=false");
 		// This is needed for the program to work!
-		b.append("&key=" + JmeRef.API_KEY);
+		b.append("&key=" + API_KEY);
 
 		System.out.println("URL built: " + b.toString());
 		return b.toString();
