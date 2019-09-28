@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -48,6 +49,14 @@ public class Main
 	private static JFrame frame;
 	private static Logger logger;
 
+	/**
+	 * The main method (really???). If run from the command line simply separate all
+	 * files desired to be processed, such as:
+	 * 
+	 * java -cp JME-0.1a-jar-with-dependencies.jar mirasoln.jme.Main DSCN0010.jpg DSCN0012.jpg
+	 * 
+	 * @param args The desired files to process
+	 */
 	public static void main(String args[])
 	{
 		initLogger();
@@ -74,7 +83,7 @@ public class Main
 	}
 
 	/**
-	 * Initializes logging.
+	 * Initializes logging
 	 */
 	private static void initLogger()
 	{
@@ -88,16 +97,23 @@ public class Main
 			fh.setFormatter(new JMELoggerFormatter());
 			logger.addHandler(fh);
 			logger.setUseParentHandlers(false);
-		} catch (SecurityException e) {
+		}
+
+		catch (SecurityException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			logger.info(e.getStackTrace().toString());
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+
+		catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			logger.info(e.getStackTrace().toString());
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Processes a file, first confirming it is a jpeg and then looking for
-	 * location metadata.
+	 * Processes a file, first confirming it is a jpeg and then looking for location metadata
 	 * @param file The file to process
 	 */
 	private static void processImage(String file)
@@ -119,8 +135,8 @@ public class Main
 
 			catch (Exception e)
 			{
-				logger.info("Error: " + e.getMessage());
-				logger.info(e.getStackTrace().toString());
+				logger.log(Level.SEVERE, "Error: " + e.getMessage());
+				logger.log(Level.SEVERE, e.getStackTrace().toString());
 			}
 		}
 
@@ -131,7 +147,7 @@ public class Main
 	}
 
 	/**
-	 * Returns true if a file has a valid jpeg file extension.
+	 * Returns true if a file has a valid jpeg file extension
 	 * @param filePath The file to check
 	 * @return True if the file has a valid jpeg extension
 	 */
@@ -142,16 +158,14 @@ public class Main
 		String fileExtension = fileName.substring(indexExtension + 1);
 
 		for (String extension : JmeRef.VALID_JPEG_EXT)
-		{
 			if (extension.equals(fileExtension))
 				return true;
-		}
 
 		return false;
 	}
 
 	/**
-	 * Gets the ZIP code from a json from the google maps api.
+	 * Gets the ZIP code from a json from the google maps api
 	 * @param json The json from the google api to parse
 	 * @throws ParseException
 	 */
@@ -172,7 +186,7 @@ public class Main
 			// Iterate over the map
 			while (address_components.hasNext())
 			{
-				Map.Entry  pair = address_components.next();
+				Map.Entry pair = address_components.next();
 
 				if (pair.getKey().equals(JmeRef.API_TAG_ADDR_COMP))
 				{
@@ -188,9 +202,9 @@ public class Main
 						Map.Entry nextPair = nextItrl.next();
 						String value = nextPair.getValue().toString();
 
-						// There's probably a better way to find the ZIP than doing this.
+						// There's probably a better way to find the ZIP than doing this
 						// If the flag is on, the last 'type' was 'postal_code', meaning
-						// the next value in the json is most likely the ZIP code.
+						// the next value in the json is most likely the ZIP code
 						if (flagZIPFound)
 						{
 							flagZIPFound = false;
@@ -332,7 +346,8 @@ public class Main
 	}
 
 	/**
-	 * Returns the coordinates belonging to an image
+	 * This method runs through all the tags found in the metadata of a file and
+	 * looks for the GPS information attached, if any
 	 * @param filePath the image
 	 * @return the coordinates
 	 * @throws IOException 
