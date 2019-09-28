@@ -297,7 +297,6 @@ public class Main
 					theTag = convertDMStoDecimal(theTag);
 					coords.append(theTag);
 					coords.append(",");
-					System.out.println(theTag);
 				}
 
 				else if (theTag.contains(JmeRef.JPG_TAG_LNG))
@@ -305,12 +304,10 @@ public class Main
 					theTag = theTag.substring(JmeRef.JPG_TAG_LNG.length());
 					theTag = convertDMStoDecimal(theTag);
 					coords.append(theTag);
-					System.out.println(theTag);
 				}
 			}
 		}
 
-		System.out.println(coords);
 		return coords.toString();
 	}
 
@@ -334,11 +331,8 @@ public class Main
 		double minute = Double.parseDouble(listCoordsDec[1]);
 		double second = Double.parseDouble(listCoordsDec[2]);
 
-		System.out.println("d: " + degree + " m: " + minute + " s:" + second);
-
 		double convertedCoords = degree + minute / 60d + second / 3600d;
 
-		System.out.println(convertedCoords);
 		return "" + convertedCoords;
 	}
 
