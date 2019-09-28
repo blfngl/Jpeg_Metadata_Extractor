@@ -94,7 +94,7 @@ public class Main
 
 		try {
 			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
-			fh.setFormatter(new JMELoggerFormatter());
+			fh.setFormatter(new JmeLoggerFormatter());
 			logger.addHandler(fh);
 			logger.setUseParentHandlers(false);
 		}
@@ -143,7 +143,7 @@ public class Main
 		else
 			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
 
-		logger.info("\nFinished processing file: " + file + ".\n");
+		logger.info("\nFinished processing file: " + file + ".");
 	}
 
 	/**
