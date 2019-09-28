@@ -10,7 +10,10 @@ public class JMELoggerFormatter extends SimpleFormatter
 	public String format(LogRecord record)
 	{
 		if (record.getLevel() == Level.INFO)
+		{
+			System.out.println(record.getMessage());
 			return record.getMessage() + "\r\n";
+		}
 
 		return super.format(record);
 	}
