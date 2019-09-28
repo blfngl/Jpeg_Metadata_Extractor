@@ -1,3 +1,10 @@
+
+/**
+ * @author Nick Mirasol
+ * Decided to make my own logger formatting to remove pesky INFO:
+ * tags that were in front of each logger.info() log.
+ */
+
 package mirasoln.jme;
 
 import java.util.logging.Level;
