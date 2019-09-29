@@ -45,7 +45,7 @@ import com.drew.metadata.Tag;
 
 public class Main
 {
-	private static final String API_KEY = "AIzaSyD32oiDbjI6E3_HWdO_W42DmI4HUM_nvSI";
+	private static final String API_KEY = "";
 
 	private static JFrame frame;
 	private static Logger logger;
@@ -67,10 +67,6 @@ public class Main
 	public static void main(String args[])
 	{
 		initLogger();
-		logger.info(JmeRef.HEADER);
-		logger.info("  - JPEG Metadata Extractor -");
-		logger.info("  - EVT Technical Challenge -");
-		logger.info("  -      Nick Mirasol       -\n");
 
 		// If there are command line args
 		if (args.length > 0)
@@ -86,19 +82,19 @@ public class Main
 					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
 					{
 						flagBonusInfo = !flagBonusInfo;
-						logger.info("Displaying bonus info");
+						logger.info(arg + ": " + flagBonusInfo);
 					}
 
 					if (arg.equals(JmeRef.FLAG_ALL_FILES))
 					{
 						flagAllFiles = !flagAllFiles;
-						logger.info("Processing all files in this directory");
+						logger.info(arg + ": " + flagAllFiles);
 					}
 
 					if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
 					{
 						flagGenerateLink = !flagGenerateLink;
-						logger.info("Generating google maps links of locations found.");
+						logger.info(arg + ": " + flagGenerateLink);
 					}
 
 					// TODO add more commands?
@@ -106,11 +102,7 @@ public class Main
 
 				else
 				{
-					if (flagAllFiles)
-						logger.info("Processing all files in this directory.");
-
-					else
-						processImage(arg);
+					processImage(arg);
 				}
 			}
 
