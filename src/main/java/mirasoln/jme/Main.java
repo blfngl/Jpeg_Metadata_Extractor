@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,8 +50,12 @@ import com.drew.metadata.Tag;
 public class Main
 {
 	private static final String API_KEY = "";
+
 	private static JFrame frame;
 	private static Logger logger;
+
+	private static boolean flagBonusInfo = false;
+	private static boolean flagGenerateLink = false;
 
 	/**
 	 * The main method (really???). If executed from the command line simply separate all
@@ -62,17 +70,49 @@ public class Main
 	public static void main(String args[])
 	{
 		initLogger();
+		logger.info(JmeRef.HEADER);
+		logger.info("  - JPEG Metadata Extractor -");
+		logger.info("  - EVT Technical Challenge -");
+		logger.info("  -      Nick Mirasol       -\n");
 
 		// If there are command line args
 		if (args.length > 0)
 		{
-			for (String image : args)
-				processImage(image);
+			for (String arg : args)
+			{
+				if (arg.substring(0, 1).equals("-"))
+				{
+					// The way this is currently set up allows a user to turn the flag on and off
+					// for specific files by surrounding them with the flag, inefficient compared
+					// to simply appending a file with a tag; maybe I'll get around to that if I
+					// have the time.
+					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
+					{
+						flagBonusInfo = !flagBonusInfo;
+						logger.info("Displaying bonus info");
+					}
+
+					else if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
+					{
+						flagGenerateLink = !flagGenerateLink;
+						logger.info("Generating google maps links of locations found.");
+					}
+
+					else if (arg.equals(JmeRef.FLAG_ALL_FILES))
+						processDirectory();
+
+					// TODO add more commands?
+				}
+
+				else
+					processFile(arg);
+			}
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
 			System.out.println("Press enter to exit.");
 			Scanner scan = new Scanner(System.in);
 			scan.nextLine();
+			scan.close();
 		}
 
 		// If there are no cmdline args, then open the gui
@@ -82,6 +122,20 @@ public class Main
 			frame.setVisible(true);
 			// TODO make button functionality
 		}
+	}
+
+	/**
+	 * Processes all files within the working directory of the jar.
+	 */
+	private static void processDirectory()
+	{
+		File folder = new File(System.getProperty("user.dir"));
+
+		logger.info("Processing all files in working directory:");
+		logger.info(folder.getAbsolutePath() + "\n");
+
+		for (File file : folder.listFiles())
+			processFile(file.getName());
 	}
 
 	/**
@@ -95,6 +149,14 @@ public class Main
 		logger = Logger.getLogger("JME " + currentDate);
 
 		try {
+			Path path = FileSystems.getDefault().getPath(JmeRef.DIR_LOGS);
+
+			if (!Files.exists(path))
+			{
+				logger.log(Level.WARNING, "Log output directory not found. Creating...");
+				Files.createDirectories(Paths.get(JmeRef.DIR_LOGS));
+			}
+
 			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
 			fh.setFormatter(new JmeLoggerFormatter());
 			logger.addHandler(fh);
@@ -116,23 +178,35 @@ public class Main
 
 	/**
 	 * Processes a file, first confirming it is a jpeg and then looking for location metadata.
-	 * @param file The file to process
+	 * @param filePath The file to process
 	 */
-	private static void processImage(String file)
+	private static void processFile(String filePath)
 	{
-		logger.info("\n========== Processing file: " + file + " ==========\n");
-
-		if (confirmJpeg(file))
+		if (confirmJpeg(filePath))
 		{
+			logger.info("\n========== Processing file: " + filePath + " ==========\n");
+
 			try
 			{
 				String coords;
-				coords = getCoordsFromImage(file);
+				coords = getCoordsFromImage(filePath);
 
-				JSONObject response;
-				response = getLocationData(coords);
+				// If no GPS data is found, don't build the url!
+				if (coords == null || coords.equals(""))
+					logger.log(Level.WARNING, "No GPS data found!");
 
-				logger.info("ZIP code: " + getZIPFromJson(response));
+				else
+				{
+					if (flagGenerateLink)
+						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
+
+					JSONObject response;
+					response = getLocationData(coords);
+
+					logger.info("ZIP code: " + getZIPFromJson(response));
+				}
+
+				logger.info("\nFinished processing file: " + filePath + ".\n");
 			}
 
 			catch (Exception e)
@@ -143,9 +217,7 @@ public class Main
 		}
 
 		else
-			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
-
-		logger.info("\nFinished processing file: " + file + ".");
+			logger.info("Skipping " + filePath);
 	}
 
 	/**
@@ -292,63 +364,6 @@ public class Main
 	}
 
 	/**
-	 * Creates the GUI of the program.
-	 */
-	private static void createGui()
-	{
-		// The window for the program
-		frame = new JFrame(JmeRef.EXE_TITLE);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(600, 600);
-
-		// Menu bar
-		JMenuBar mb = new JMenuBar();
-		JMenu menuFile = new JMenu(JmeRef.EXE_MENU_TITLE_FILE);
-		JMenu menuOptions = new JMenu("Options");
-		JMenu menuHelp = new JMenu("Help");
-
-		JMenuItem menuFile_Open = new JMenuItem(JmeRef.EXE_SUBMENU_OPEN);
-		JMenuItem menuFile_Dump = new JMenuItem(JmeRef.EXE_SUBMENU_DUMP);
-		JMenuItem menuFile_Exit = new JMenuItem(JmeRef.EXE_SUBMENU_EXIT);
-
-		menuFile_Open.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Opening file...");
-			}
-		});
-
-		menuFile_Dump.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) { 
-				System.out.println("Dumping metadata");
-			}
-		});
-
-		menuFile_Exit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Exiting JME");
-				System.exit(0);
-			}
-		});
-
-		mb.add(menuFile);
-		mb.add(menuOptions);
-		mb.add(menuHelp);
-
-		menuFile.add(menuFile_Open);
-		menuFile.add(menuFile_Dump);
-		menuFile.add(menuFile_Exit);
-
-		frame.getContentPane().add(BorderLayout.NORTH, mb);
-
-		// ZIP code display
-		JPanel panelZip = new JPanel();
-		JLabel labelPanelZip = new JLabel("ZIP code:");
-
-		panelZip.add(labelPanelZip);
-		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
-	}
-
-	/**
 	 * This method runs through all the tags found in the metadata of a file and
 	 * looks for the GPS information attached, if any.
 	 * @param filePath the image
@@ -412,6 +427,63 @@ public class Main
 		double convertedCoords = degree + minute / 60d + second / 3600d;
 
 		return "" + convertedCoords;
+	}
+
+	/**
+	 * Creates the GUI of the program.
+	 */
+	private static void createGui()
+	{
+		// The window for the program
+		frame = new JFrame(JmeRef.EXE_TITLE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600, 600);
+
+		// Menu bar
+		JMenuBar mb = new JMenuBar();
+		JMenu menuFile = new JMenu(JmeRef.EXE_MENU_TITLE_FILE);
+		JMenu menuOptions = new JMenu("Options");
+		JMenu menuHelp = new JMenu("Help");
+
+		JMenuItem menuFile_Open = new JMenuItem(JmeRef.EXE_SUBMENU_OPEN);
+		JMenuItem menuFile_Dump = new JMenuItem(JmeRef.EXE_SUBMENU_DUMP);
+		JMenuItem menuFile_Exit = new JMenuItem(JmeRef.EXE_SUBMENU_EXIT);
+
+		menuFile_Open.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("Opening file...");
+			}
+		});
+
+		menuFile_Dump.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) { 
+				System.out.println("Dumping metadata");
+			}
+		});
+
+		menuFile_Exit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println("Exiting JME");
+				System.exit(0);
+			}
+		});
+
+		mb.add(menuFile);
+		mb.add(menuOptions);
+		mb.add(menuHelp);
+
+		menuFile.add(menuFile_Open);
+		menuFile.add(menuFile_Dump);
+		menuFile.add(menuFile_Exit);
+
+		frame.getContentPane().add(BorderLayout.NORTH, mb);
+
+		// ZIP code display
+		JPanel panelZip = new JPanel();
+		JLabel labelPanelZip = new JLabel("ZIP code:");
+
+		panelZip.add(labelPanelZip);
+		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
 	}
 
 	/**

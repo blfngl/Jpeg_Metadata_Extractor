@@ -22,6 +22,7 @@ public class JmeLoggerFormatter extends SimpleFormatter
 			return record.getMessage() + "\r\n";
 		}
 
+		System.out.println(record.getLevel() + ": " + record.getMessage());
 		return super.format(record);
 	}
 }
