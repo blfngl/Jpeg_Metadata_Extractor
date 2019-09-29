@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -145,6 +149,14 @@ public class Main
 		logger = Logger.getLogger("JME " + currentDate);
 
 		try {
+			Path path = FileSystems.getDefault().getPath(JmeRef.DIR_LOGS);
+
+			if (!Files.exists(path))
+			{
+				logger.log(Level.WARNING, "Log output directory not found. Creating...");
+				Files.createDirectories(Paths.get(JmeRef.DIR_LOGS));
+			}
+
 			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
 			fh.setFormatter(new JmeLoggerFormatter());
 			logger.addHandler(fh);
