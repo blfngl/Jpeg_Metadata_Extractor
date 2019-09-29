@@ -8,6 +8,7 @@ package mirasoln.jme;
 public class JmeRef
 {
 	public static final String MAP_API = "https://maps.googleapis.com/maps/api/geocode/json?";
+	public static final String MAP_LINK = "https://www.google.com/maps/place/";
 	
 	public static final String FLAG_BONUS_INFO = "-b";
 	public static final String FLAG_ALL_FILES = "-a";

@@ -101,7 +101,9 @@ public class Main
 				}
 
 				else
+				{
 					processImage(arg);
+				}
 			}
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
@@ -163,6 +165,9 @@ public class Main
 			{
 				String coords;
 				coords = getCoordsFromImage(file);
+
+				if (flagGenerateLink)
+					logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
 
 				JSONObject response;
 				response = getLocationData(coords);
@@ -391,7 +396,7 @@ public class Main
 
 		return "" + convertedCoords;
 	}
-	
+
 	/**
 	 * Creates the GUI of the program.
 	 */
