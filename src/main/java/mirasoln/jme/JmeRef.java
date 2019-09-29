@@ -27,4 +27,12 @@ public class JmeRef
 	public static final String EXE_SUBMENU_OPEN = "Open                          (Ctrl + O)";
 	public static final String EXE_SUBMENU_DUMP = "Dump metadata      (Ctrl + D)";
 	public static final String EXE_SUBMENU_EXIT = "Exit                             (Ctrl + Esc)";
+	
+	public static final String HEADER = "\r\n" +
+			"       ██╗███╗   ███╗███████╗\r\n" +
+			"       ██║████╗ ████║██╔════╝\r\n" +
+			"       ██║██╔████╔██║█████╗  \r\n" +
+			"  ██   ██║██║╚██╔╝██║██╔══╝  \r\n" +
+			"  ╚█████╔╝██║ ╚═╝ ██║███████╗\r\n" +
+			"   ╚════╝ ╚═╝     ╚═╝╚══════╝\r\n";
 }
