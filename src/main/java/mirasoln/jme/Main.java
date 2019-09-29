@@ -61,13 +61,26 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
+		boolean flagBonusInfo = false;
+
 		initLogger();
 
 		// If there are command line args
 		if (args.length > 0)
 		{
 			for (String image : args)
-				processImage(image);
+			{
+				if (image.substring(0, 1).equals("-"))
+				{
+					if (image.equals(JmeRef.FLAG_BONUS_INFO))
+						flagBonusInfo = !flagBonusInfo;
+					
+					// TODO add more commands?
+				}
+
+				else
+					processImage(image);
+			}
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
 			System.out.println("Press enter to exit.");
