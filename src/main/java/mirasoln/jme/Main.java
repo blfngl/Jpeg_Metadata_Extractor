@@ -49,7 +49,7 @@ public class Main
 
 	private static JFrame frame;
 	private static Logger logger;
-	
+
 	private static boolean flagBonusInfo = false;
 	private static boolean flagAllFiles = false;
 	private static boolean flagGenerateLink = false;
@@ -80,13 +80,22 @@ public class Main
 					// to simply appending a file with a tag; maybe I'll get around to that if I
 					// have the time.
 					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
+					{
 						flagBonusInfo = !flagBonusInfo;
-					
+						logger.info(arg + ": " + flagBonusInfo);
+					}
+
 					if (arg.equals(JmeRef.FLAG_ALL_FILES))
+					{
 						flagAllFiles = !flagAllFiles;
-					
+						logger.info(arg + ": " + flagAllFiles);
+					}
+
 					if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
+					{
 						flagGenerateLink = !flagGenerateLink;
+						logger.info(arg + ": " + flagGenerateLink);
+					}
 
 					// TODO add more commands?
 				}
