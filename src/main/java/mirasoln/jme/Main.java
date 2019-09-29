@@ -174,13 +174,20 @@ public class Main
 				String coords;
 				coords = getCoordsFromImage(file);
 
-				if (flagGenerateLink)
-					logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
+				// If no GPS data is found, don't build the url!
+				if (coords == null || coords.equals(""))
+					logger.log(Level.WARNING, "No GPS data found!");
 
-				JSONObject response;
-				response = getLocationData(coords);
+				else
+				{
+					if (flagGenerateLink)
+						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
 
-				logger.info("ZIP code: " + getZIPFromJson(response));
+					JSONObject response;
+					response = getLocationData(coords);
+
+					logger.info("ZIP code: " + getZIPFromJson(response));
+				}
 			}
 
 			catch (Exception e)
