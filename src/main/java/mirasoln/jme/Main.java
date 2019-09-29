@@ -46,8 +46,13 @@ import com.drew.metadata.Tag;
 public class Main
 {
 	private static final String API_KEY = "";
+
 	private static JFrame frame;
 	private static Logger logger;
+	
+	private static boolean flagBonusInfo = false;
+	private static boolean flagAllFiles = false;
+	private static boolean flagGenerateLink = false;
 
 	/**
 	 * The main method (really???). If executed from the command line simply separate all
@@ -61,25 +66,33 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
-		boolean flagBonusInfo = false;
-
 		initLogger();
 
 		// If there are command line args
 		if (args.length > 0)
 		{
-			for (String image : args)
+			for (String arg : args)
 			{
-				if (image.substring(0, 1).equals("-"))
+				if (arg.substring(0, 1).equals("-"))
 				{
-					if (image.equals(JmeRef.FLAG_BONUS_INFO))
+					// The way this is currently set up allows a user to turn the flag on and off
+					// for specific files by surrounding them with the flag, inefficient compared
+					// to simply appending a file with a tag; maybe I'll get around to that if I
+					// have the time.
+					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
 						flagBonusInfo = !flagBonusInfo;
 					
+					if (arg.equals(JmeRef.FLAG_ALL_FILES))
+						flagAllFiles = !flagAllFiles;
+					
+					if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
+						flagGenerateLink = !flagGenerateLink;
+
 					// TODO add more commands?
 				}
 
 				else
-					processImage(image);
+					processImage(arg);
 			}
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
