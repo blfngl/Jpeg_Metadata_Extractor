@@ -89,29 +89,20 @@ public class Main
 						logger.info("Displaying bonus info");
 					}
 
-					if (arg.equals(JmeRef.FLAG_ALL_FILES))
-					{
-						flagAllFiles = !flagAllFiles;
-						logger.info("Processing all files in this directory");
-					}
-
-					if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
+					else if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
 					{
 						flagGenerateLink = !flagGenerateLink;
 						logger.info("Generating google maps links of locations found.");
 					}
 
+					else if (arg.equals(JmeRef.FLAG_ALL_FILES))
+						processDirectory();
+
 					// TODO add more commands?
 				}
 
 				else
-				{
-					if (flagAllFiles)
-						logger.info("Processing all files in this directory.");
-
-					else
-						processImage(arg);
-				}
+					processFile(arg);
 			}
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
@@ -127,6 +118,20 @@ public class Main
 			frame.setVisible(true);
 			// TODO make button functionality
 		}
+	}
+
+	/**
+	 * Processes all files within the working directory of the jar.
+	 */
+	private static void processDirectory()
+	{
+		File folder = new File(System.getProperty("user.dir"));
+
+		logger.info("Processing all files in working directory:");
+		logger.info(folder.getAbsolutePath() + "\n");
+
+		for (File file : folder.listFiles())
+			processFile(file.getName());
 	}
 
 	/**
@@ -161,18 +166,18 @@ public class Main
 
 	/**
 	 * Processes a file, first confirming it is a jpeg and then looking for location metadata.
-	 * @param file The file to process
+	 * @param filePath The file to process
 	 */
-	private static void processImage(String file)
+	private static void processFile(String filePath)
 	{
-		logger.info("\n========== Processing file: " + file + " ==========\n");
-
-		if (confirmJpeg(file))
+		if (confirmJpeg(filePath))
 		{
+			logger.info("\n========== Processing file: " + filePath + " ==========\n");
+
 			try
 			{
 				String coords;
-				coords = getCoordsFromImage(file);
+				coords = getCoordsFromImage(filePath);
 
 				// If no GPS data is found, don't build the url!
 				if (coords == null || coords.equals(""))
@@ -188,6 +193,8 @@ public class Main
 
 					logger.info("ZIP code: " + getZIPFromJson(response));
 				}
+
+				logger.info("\nFinished processing file: " + filePath + ".\n");
 			}
 
 			catch (Exception e)
@@ -198,9 +205,7 @@ public class Main
 		}
 
 		else
-			logger.info("File " + file + " does not exist or does not have a valid jpeg file extension!");
-
-		logger.info("\nFinished processing file: " + file + ".");
+			logger.info("Skipping " + filePath);
 	}
 
 	/**
