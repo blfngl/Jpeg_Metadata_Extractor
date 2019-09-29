@@ -67,6 +67,10 @@ public class Main
 	public static void main(String args[])
 	{
 		initLogger();
+		logger.info(JmeRef.HEADER);
+		logger.info("  - JPEG Metadata Extractor -");
+		logger.info("  - EVT Technical Challenge -");
+		logger.info("  -      Nick Mirasol       -\n");
 
 		// If there are command line args
 		if (args.length > 0)
@@ -82,19 +86,19 @@ public class Main
 					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
 					{
 						flagBonusInfo = !flagBonusInfo;
-						logger.info(arg + ": " + flagBonusInfo);
+						logger.info("Displaying bonus info");
 					}
 
 					if (arg.equals(JmeRef.FLAG_ALL_FILES))
 					{
 						flagAllFiles = !flagAllFiles;
-						logger.info(arg + ": " + flagAllFiles);
+						logger.info("Processing all files in this directory");
 					}
 
 					if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
 					{
 						flagGenerateLink = !flagGenerateLink;
-						logger.info(arg + ": " + flagGenerateLink);
+						logger.info("Generating google maps links of locations found.");
 					}
 
 					// TODO add more commands?
@@ -102,7 +106,11 @@ public class Main
 
 				else
 				{
-					processImage(arg);
+					if (flagAllFiles)
+						logger.info("Processing all files in this directory.");
+
+					else
+						processImage(arg);
 				}
 			}
 
