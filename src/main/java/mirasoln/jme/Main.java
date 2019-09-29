@@ -69,6 +69,8 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
+		long deltaTime = System.currentTimeMillis();
+
 		initLogger();
 		logger.info(JmeRef.HEADER);
 		logger.info("  - JPEG Metadata Extractor -");
@@ -108,8 +110,12 @@ public class Main
 					processFile(arg);
 			}
 
+			logger.info("Finished!");
+			logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
+
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
 			System.out.println("Press enter to exit.");
+
 			Scanner scan = new Scanner(System.in);
 			scan.nextLine();
 			scan.close();
