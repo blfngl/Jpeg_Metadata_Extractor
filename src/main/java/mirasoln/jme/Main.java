@@ -50,7 +50,7 @@ public class Main
 	private static Logger logger;
 
 	/**
-	 * The main method (really???). If run from the command line simply separate all
+	 * The main method (really???). If executed from the command line simply separate all
 	 * files desired to be processed, such as:
 	 * 
 	 * java -cp JME-0.1a-jar-with-dependencies.jar mirasoln.jme.Main DSCN0010.jpg DSCN0012.jpg
