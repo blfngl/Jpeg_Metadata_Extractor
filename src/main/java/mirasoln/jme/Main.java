@@ -51,7 +51,6 @@ public class Main
 	private static Logger logger;
 
 	private static boolean flagBonusInfo = false;
-	private static boolean flagAllFiles = false;
 	private static boolean flagGenerateLink = false;
 
 	/**
@@ -109,6 +108,7 @@ public class Main
 			System.out.println("Press enter to exit.");
 			Scanner scan = new Scanner(System.in);
 			scan.nextLine();
+			scan.close();
 		}
 
 		// If there are no cmdline args, then open the gui
