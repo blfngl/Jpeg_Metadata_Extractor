@@ -157,7 +157,7 @@ public class Main
 				Files.createDirectories(Paths.get(JmeRef.DIR_LOGS));
 			}
 
-			FileHandler fh = new FileHandler("jme_logs/" + currentDate + ".txt");
+			FileHandler fh = new FileHandler(JmeRef.DIR_LOGS + "/" + currentDate + ".log");
 			fh.setFormatter(new JmeLoggerFormatter());
 			logger.addHandler(fh);
 			logger.setUseParentHandlers(false);
@@ -305,7 +305,6 @@ public class Main
 	{
 		// Build the url
 		String webAddress = buildUrl(coords);
-		String content = null;
 
 		try
 		{
@@ -430,6 +429,23 @@ public class Main
 	}
 
 	/**
+	 * Reads metadata information from a given jpeg.
+	 * @throws ImageProcessingException
+	 * @throws IOException
+	 */
+	private static void readMeta(String filePath) throws ImageProcessingException, IOException
+	{
+		logger.info("Getting metadata from " + filePath);
+
+		File fileJpeg = new File(filePath);
+		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
+
+		for (Directory dir : meta.getDirectories())
+			for (Tag tag : dir.getTags())
+				logger.info(tag.toString());
+	}
+
+	/**
 	 * Creates the GUI of the program.
 	 */
 	private static void createGui()
@@ -484,22 +500,5 @@ public class Main
 
 		panelZip.add(labelPanelZip);
 		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
-	}
-
-	/**
-	 * Reads metadata information from a given jpeg.
-	 * @throws ImageProcessingException
-	 * @throws IOException
-	 */
-	private static void readMeta(String filePath) throws ImageProcessingException, IOException
-	{
-		logger.info("Getting metadata from " + filePath);
-
-		File fileJpeg = new File(filePath);
-		Metadata meta = ImageMetadataReader.readMetadata(fileJpeg);
-
-		for (Directory dir : meta.getDirectories())
-			for (Tag tag : dir.getTags())
-				logger.info(tag.toString());
 	}
 }
