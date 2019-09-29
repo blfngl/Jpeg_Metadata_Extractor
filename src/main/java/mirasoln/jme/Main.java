@@ -55,6 +55,8 @@ public class Main
 	 * 
 	 * java -cp JME-0.1a-jar-with-dependencies.jar mirasoln.jme.Main DSCN0010.jpg DSCN0012.jpg
 	 * 
+	 * This will process files DSCN0010.jpg and DSCN0012.jpg.
+	 * 
 	 * @param args The desired files to process
 	 */
 	public static void main(String args[])
@@ -113,7 +115,7 @@ public class Main
 	}
 
 	/**
-	 * Processes a file, first confirming it is a jpeg and then looking for location metadata
+	 * Processes a file, first confirming it is a jpeg and then looking for location metadata.
 	 * @param file The file to process
 	 */
 	private static void processImage(String file)
@@ -128,7 +130,7 @@ public class Main
 				coords = getCoordsFromImage(file);
 
 				JSONObject response;
-				response = getLocation(coords);
+				response = getLocationData(coords);
 
 				logger.info("ZIP code: " + getZIPFromJson(response));
 			}
@@ -147,7 +149,7 @@ public class Main
 	}
 
 	/**
-	 * Returns true if a file has a valid jpeg file extension
+	 * Returns true if a file has a valid jpeg file extension.
 	 * @param filePath The file to check
 	 * @return True if the file has a valid jpeg extension
 	 */
@@ -165,7 +167,7 @@ public class Main
 	}
 
 	/**
-	 * Gets the ZIP code from a json from the google maps api
+	 * Gets the ZIP code from a json from the google maps api.
 	 * @param json The json from the google api to parse
 	 * @throws ParseException
 	 */
@@ -222,12 +224,12 @@ public class Main
 	}
 
 	/**
-	 * Gets a json file of information about a location specified by lat and long coords
+	 * Gets a json file of information about a location specified by lat and long coords.
 	 * @param coords the lat and long coords, separated by a ','
 	 * @return the json containing information about the location
 	 * @throws ParseException
 	 */
-	private static JSONObject getLocation(String coords) throws ParseException
+	private static JSONObject getLocationData(String coords) throws ParseException
 	{
 		// Build the url
 		String webAddress = buildUrl(coords);
@@ -262,13 +264,14 @@ public class Main
 				stream.close();
 			}
 		} catch (IOException e) {
-			System.out.println("Error: " + e.getMessage());
+			logger.log(Level.SEVERE, e.getMessage());
+			logger.log(Level.SEVERE, e.getStackTrace().toString());
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Builds a url from coordinates provided by the image(s)
+	 * Builds a url from coordinates provided by the image(s).
 	 * @param coords latitude and longitude coordinates separated by a ','
 	 * @return the https request
 	 */
@@ -289,7 +292,7 @@ public class Main
 	}
 
 	/**
-	 * Creates the GUI of the program
+	 * Creates the GUI of the program.
 	 */
 	private static void createGui()
 	{
@@ -347,7 +350,7 @@ public class Main
 
 	/**
 	 * This method runs through all the tags found in the metadata of a file and
-	 * looks for the GPS information attached, if any
+	 * looks for the GPS information attached, if any.
 	 * @param filePath the image
 	 * @return the coordinates
 	 * @throws IOException 
@@ -387,7 +390,7 @@ public class Main
 	}
 
 	/**
-	 * Converts DMS (degrees, minutes, seconds) to decimal format
+	 * Converts a DMS (degrees, minutes, seconds) variable to decimal format.
 	 * @return the decimal format of a DMS coordinate string
 	 */
 	private static String convertDMStoDecimal(String coordsDMS)
@@ -412,7 +415,7 @@ public class Main
 	}
 
 	/**
-	 * Reads metadata information from a given jpeg
+	 * Reads metadata information from a given jpeg.
 	 * @throws ImageProcessingException
 	 * @throws IOException
 	 */
