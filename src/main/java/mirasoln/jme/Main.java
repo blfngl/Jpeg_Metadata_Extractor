@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class Main
 
 	private static boolean flagBonusInfo = false;
 	private static boolean flagGenerateLink = false;
+	private static boolean flagAllFiles = false;
 
 	/**
 	 * The main method (really???). If executed from the command line simply separate all
@@ -72,7 +74,7 @@ public class Main
 		long deltaTime = System.currentTimeMillis();
 
 		initLogger();
-		logger.info(JmeRef.HEADER);
+		System.out.println(JmeRef.HEADER);
 		logger.info("  - JPEG Metadata Extractor -");
 		logger.info("  - EVT Technical Challenge -");
 		logger.info("  -      Nick Mirasol       -\n");
@@ -80,35 +82,14 @@ public class Main
 		// If there are command line args
 		if (args.length > 0)
 		{
-			for (String arg : args)
-			{
-				if (arg.substring(0, 1).equals("-"))
-				{
-					// The way this is currently set up allows a user to turn the flag on and off
-					// for specific files by surrounding them with the flag, inefficient compared
-					// to simply appending a file with a tag; maybe I'll get around to that if I
-					// have the time.
-					if (arg.equals(JmeRef.FLAG_BONUS_INFO))
-					{
-						flagBonusInfo = !flagBonusInfo;
-						logger.info("Displaying bonus info");
-					}
+			ArrayList<String> argList = processAndRemoveFlags(args);
 
-					else if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
-					{
-						flagGenerateLink = !flagGenerateLink;
-						logger.info("Generating google maps links of locations found.");
-					}
+			if (flagAllFiles)
+				processDirectory();
 
-					else if (arg.equals(JmeRef.FLAG_ALL_FILES))
-						processDirectory();
-
-					// TODO add more commands?
-				}
-
-				else
+			else
+				for (String arg : argList)
 					processFile(arg);
-			}
 
 			logger.info("Finished!");
 			logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
@@ -128,6 +109,48 @@ public class Main
 			frame.setVisible(true);
 			// TODO make button functionality
 		}
+	}
+
+	/**
+	 * Runs through all arguments and determines if flags should be turned on. Returns a list
+	 * of the arguments provided by the user minus all commands that may have been included.
+	 * @param args The arguments provided by the user
+	 * @return The arguments provided by the user minus all commands
+	 */
+	private static ArrayList<String> processAndRemoveFlags(String[] args)
+	{
+		ArrayList<String> argList = new ArrayList<String>();
+
+		for (String arg : args)
+		{
+			// Check if argument is a command
+			if (arg.substring(0, 1).equals("-"))
+			{
+				if (arg.equals(JmeRef.FLAG_BONUS_INFO))
+				{
+					flagBonusInfo = true;
+					logger.info("Displaying bonus info.");
+				}
+
+				else if (arg.equals(JmeRef.FLAG_GENERATE_LINK))
+				{
+					flagGenerateLink = true;
+					logger.info("Generating google maps links of locations found.");
+				}
+
+				else if (arg.equals(JmeRef.FLAG_ALL_FILES))
+					flagAllFiles = true;
+
+				else
+					logger.log(Level.WARNING, arg + " is an invalid command!");
+			}
+
+			// Otherwise add the argument to the command-free list
+			else
+				argList.add(arg);
+		}
+
+		return argList;
 	}
 
 	/**
