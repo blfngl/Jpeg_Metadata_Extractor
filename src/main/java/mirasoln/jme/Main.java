@@ -59,6 +59,9 @@ public class Main
 	private static boolean flagGenerateLink = false;
 	private static boolean flagAllFiles = false;
 
+	private static int numFilesProcessed = 0;
+	private static int numFilesSkipped = 0;
+
 	/**
 	 * The main method (really???). If executed from the command line simply separate all
 	 * files desired to be processed, such as:
@@ -82,6 +85,7 @@ public class Main
 		// If there are command line args
 		if (args.length > 0)
 		{
+			logger.info("Beginning...");
 			ArrayList<String> argList = processAndRemoveFlags(args);
 
 			if (flagAllFiles)
@@ -92,6 +96,8 @@ public class Main
 					processFile(arg);
 
 			logger.info("Finished!");
+			logger.info("Processed " + numFilesProcessed + " files.");
+			logger.info("Skipped " + numFilesSkipped + " files.");
 			logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
 
 			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
@@ -222,17 +228,19 @@ public class Main
 
 				// If no GPS data is found, don't build the url!
 				if (coords == null || coords.equals(""))
-					logger.log(Level.WARNING, "No GPS data found!");
+					logger.info("No GPS data found!");
 
 				else
 				{
-					if (flagGenerateLink)
-						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
-
 					JSONObject response;
 					response = getLocationData(coords);
 
 					logger.info("ZIP code: " + getZIPFromJson(response));
+
+					if (flagGenerateLink)
+						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
+
+					numFilesProcessed++;
 				}
 
 				logger.info("\nFinished processing file: " + filePath + ".\n");
@@ -246,7 +254,10 @@ public class Main
 		}
 
 		else
+		{
 			logger.info("Skipping " + filePath);
+			numFilesSkipped++;
+		}
 	}
 
 	/**
@@ -321,7 +332,7 @@ public class Main
 			}
 		}
 
-		return "No zip could be associated with the coordinates attached to this image!";
+		return "No ZIP code could be associated with the coordinates attached to this image!";
 	}
 
 	/**
