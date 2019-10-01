@@ -321,7 +321,7 @@ public class Main
 		String fileExtension = fileName.substring(indexExtension + 1);
 
 		for (String extension : JmeRef.VALID_JPEG_EXT)
-			if (extension.toLowerCase().equals(fileExtension))
+			if (extension.equals(fileExtension.toLowerCase()))
 				return true;
 
 		return false;
