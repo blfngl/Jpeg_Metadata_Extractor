@@ -318,10 +318,10 @@ public class Main
 	{
 		String fileName = new File(filePath).getName();
 		int indexExtension = fileName.lastIndexOf(".");
-		String fileExtension = fileName.substring(indexExtension + 1);
+		String fileExtension = fileName.substring(indexExtension + 1).toLowerCase();
 
 		for (String extension : JmeRef.VALID_JPEG_EXT)
-			if (extension.equals(fileExtension.toLowerCase()))
+			if (extension.equals(fileExtension))
 				return true;
 
 		return false;
