@@ -82,10 +82,11 @@ public class Main
 		logger.info("  - EVT Technical Challenge -");
 		logger.info("  -      Nick Mirasol       -\n");
 
+		logger.info("Beginning...");
+
 		// If there are command line args
 		if (args.length > 0)
 		{
-			logger.info("Beginning...");
 			ArrayList<String> argList = processAndRemoveFlags(args);
 
 			if (flagAllFiles)
@@ -94,27 +95,24 @@ public class Main
 			else
 				for (String arg : argList)
 					processFile(arg);
-
-			logger.info("Finished!");
-			logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
-			logger.info("Processed " + numFilesProcessed + " files.");
-			logger.info("Skipped " + numFilesSkipped + " files.");
-
-			System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
-			System.out.println("Press enter to exit.");
-
-			Scanner scan = new Scanner(System.in);
-			scan.nextLine();
-			scan.close();
 		}
 
-		// If there are no cmdline args, then open the gui
+		// If there are no cmdline args, run on all files in the working directory
 		else
-		{
-			createGui();
-			frame.setVisible(true);
-			// TODO make button functionality
-		}
+			processDirectory();
+		
+		logger.info("Finished!");
+		logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
+		logger.info("Processed " + numFilesProcessed + " files.");
+		logger.info("Skipped " + numFilesSkipped + " files.");
+
+		System.out.println("\nOutput printed to jme_logs/" + logger.getName() + ".");
+		System.out.println("Press enter to exit.");
+
+		// I don't think this causes any issues (ie memory leaks) if the tool is run as a jar
+		Scanner scan = new Scanner(System.in);
+		scan.nextLine();
+		scan.close();
 	}
 
 	/**
@@ -135,7 +133,7 @@ public class Main
 
 				// If no GPS data is found, don't build the url!
 				if (coords == null || coords.equals(""))
-					logger.info("No GPS data found!");
+					logger.info("No GPS data attached to this file!");
 
 				else
 				{
@@ -447,63 +445,6 @@ public class Main
 
 		for (File file : folder.listFiles())
 			processFile(file.getName());
-	}
-
-	/**
-	 * Creates the GUI of the program.
-	 */
-	private static void createGui()
-	{
-		// The window for the program
-		frame = new JFrame(JmeRef.EXE_TITLE);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(600, 600);
-
-		// Menu bar
-		JMenuBar mb = new JMenuBar();
-		JMenu menuFile = new JMenu(JmeRef.EXE_MENU_TITLE_FILE);
-		JMenu menuOptions = new JMenu("Options");
-		JMenu menuHelp = new JMenu("Help");
-
-		JMenuItem menuFile_Open = new JMenuItem(JmeRef.EXE_SUBMENU_OPEN);
-		JMenuItem menuFile_Dump = new JMenuItem(JmeRef.EXE_SUBMENU_DUMP);
-		JMenuItem menuFile_Exit = new JMenuItem(JmeRef.EXE_SUBMENU_EXIT);
-
-		menuFile_Open.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Opening file...");
-			}
-		});
-
-		menuFile_Dump.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) { 
-				System.out.println("Dumping metadata");
-			}
-		});
-
-		menuFile_Exit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Exiting JME");
-				System.exit(0);
-			}
-		});
-
-		mb.add(menuFile);
-		mb.add(menuOptions);
-		mb.add(menuHelp);
-
-		menuFile.add(menuFile_Open);
-		menuFile.add(menuFile_Dump);
-		menuFile.add(menuFile_Exit);
-
-		frame.getContentPane().add(BorderLayout.NORTH, mb);
-
-		// ZIP code display
-		JPanel panelZip = new JPanel();
-		JLabel labelPanelZip = new JLabel("ZIP code:");
-
-		panelZip.add(labelPanelZip);
-		frame.getContentPane().add(BorderLayout.SOUTH, panelZip);
 	}
 
 	/**
