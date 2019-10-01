@@ -52,7 +52,6 @@ public class Main
 {
 	private static final String API_KEY = "";
 
-	private static JFrame frame;
 	private static Logger logger;
 
 	private static boolean flagBonusInfo = false;
@@ -123,7 +122,7 @@ public class Main
 	{
 		if (confirmJpeg(filePath))
 		{
-			System.out.println("\n========== Processing file: " + filePath + " ==========\n");
+			logger.info("\n========== Processing file: " + filePath + " ==========\n");
 
 			try
 			{
