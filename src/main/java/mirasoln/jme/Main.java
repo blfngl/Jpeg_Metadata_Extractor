@@ -145,6 +145,12 @@ public class Main
 
 					if (flagGenerateLink)
 						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
+
+					if (flagBonusInfo)
+					{
+						logger.info("\nBonus info:");
+						readMeta(filePath);
+					}
 				}
 
 				System.out.println("\nFinished processing file: " + filePath + ".");
