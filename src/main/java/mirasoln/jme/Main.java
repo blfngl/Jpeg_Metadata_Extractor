@@ -125,12 +125,13 @@ public class Main
 	{
 		if (confirmJpeg(filePath))
 		{
-			logger.info("\n========== Processing file: " + filePath + " ==========\n");
+			System.out.println("\n========== Processing file: " + filePath + " ==========\n");
 
 			try
 			{
 				String coords;
 				coords = getCoordsFromImage(filePath);
+				logger.info(filePath);
 
 				// If no GPS data is found, don't build the url!
 				if (coords == null || coords.equals(""))
@@ -149,7 +150,8 @@ public class Main
 					numFilesProcessed++;
 				}
 
-				logger.info("\nFinished processing file: " + filePath + ".\n");
+				System.out.println("\nFinished processing file: " + filePath + ".");
+				logger.info("\n");
 			}
 
 			catch (Exception e)
@@ -161,7 +163,7 @@ public class Main
 
 		else
 		{
-			logger.info("Skipping " + filePath);
+			System.out.println("Skipping " + filePath);
 			numFilesSkipped++;
 		}
 	}
