@@ -99,7 +99,7 @@ public class Main
 		// If there are no cmdline args, run on all files in the working directory
 		else
 			processDirectory();
-		
+
 		logger.info("Finished!");
 		logger.info("Operation completed in " + Math.abs((deltaTime -= System.currentTimeMillis())) + "ms.");
 		logger.info("Processed " + numFilesProcessed + " files.");
@@ -126,6 +126,8 @@ public class Main
 
 			try
 			{
+				numFilesProcessed++;
+
 				String coords;
 				coords = getCoordsFromImage(filePath);
 				logger.info(filePath);
@@ -143,8 +145,6 @@ public class Main
 
 					if (flagGenerateLink)
 						logger.info("Google maps link: " + JmeRef.MAP_LINK + coords);
-
-					numFilesProcessed++;
 				}
 
 				System.out.println("\nFinished processing file: " + filePath + ".");
