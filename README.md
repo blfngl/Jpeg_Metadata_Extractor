@@ -5,7 +5,7 @@ The file(s) must have a valid JPEG file extension in order to be processed.
 
 ### Usage
 
-Executing the .jar will scan all files within the working directory.
+Executing the .jar will scan all files within the working directory and output logs to \jme_logs\[log file].log.
 
 Otherwise, you may run the application via the scripts provided (Start.bat | Start.sh). Edit these if needed!
 
