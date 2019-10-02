@@ -5,7 +5,7 @@ The file(s) must have a valid JPEG file extension in order to be processed.
 
 ### Usage
 
-Executing the .jar will open a GUI (WIP).  
+Executing the .jar will scan all files within the working directory.
 
 Otherwise, you may run the application via the scripts provided (Start.bat | Start.sh). Edit these if needed!
 
