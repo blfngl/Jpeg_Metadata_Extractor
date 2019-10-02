@@ -21,5 +21,4 @@ Generates a link to view the location found on google maps.
 The tool will process all available files found in the directory.
 
 #### -b  
-WIP
 Prints/dumps other tags found on the JPEG.
