@@ -8,10 +8,13 @@ The program requires an internet connection to work properly.
 
 Executing the .jar will scan all files within the working directory and output logs to \jme_logs\\[log file].log.
 
-Otherwise, you may run the application via the scripts provided (Start.bat | Start.sh). Edit these if needed!
+Otherwise, you may run the application via the scripts provided (Start.bat | Start.sh). You may add any of the valid command line arguments to these files.
 
-Finally, to run the application from the command line:  
-```java -cp [jar to run] mirasoln.jme.Main [args]```
+Finally, to run the application via command line:  
+```java -cp [jar to run] mirasoln.jme.Main [args]```  
+
+Ex:  
+```java -cp JME-0.1a.jar mirasoln.jme.Main -l myPic.jpg```  
 
 ### Command line arguments
 
