@@ -16,7 +16,7 @@ Finally, to run the application via command line:
 Ex:  
 ```java -cp JME-0.1a.jar mirasoln.jme.Main -l myPic.jpg```  
 
-### Command line arguments
+### Command line options
 
 #### -l  
 Generates a link to view the location found on google maps.
